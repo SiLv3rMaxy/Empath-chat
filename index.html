@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Empath Chat</title>
+
+  <style>
+    /* ==============================
+       VARIABILI DI COLORE E STILI BASE
+    =============================== */
+    :root {
+      --bg-main: #121212;
+      --bg-sidebar: #1e1e1e;
+      --bg-message: #2a2a2a;
+      --color-text: white;
+      --border-user: #570082;
+      --border-bot: #005982;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--color-text);
+      overflow: hidden;
+      display: flex;
+    }
+
+    /* ==============================
+       SIDEBAR
+    =============================== */
+    .sidebar {
+      width: 20%;
+      background-color: var(--bg-sidebar);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-right: 1px solid var(--color-text);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px;
+    }
+
+    /* Sezione superiore della sidebar */
+    .sidebar .top-section {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .sidebar .top-section img.logo-small {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 10px;
+    }
+    .sidebar .top-section .info-icon {
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      position: relative;
+      margin-top: 10px;
+    }
+    .sidebar .top-section .info-icon img {
+      width: 100%;
+      height: 100%;
+    }
+    /* Tooltip */
+    .sidebar .top-section .tooltip {
+      display: none;
+      position: absolute;
+      left: 40px;
+      top: 0;
+      background-color: var(--bg-message);
+      color: var(--color-text);
+      padding: 10px;
+      border-radius: 10px;
+      width: 250px;
+      font-size: 12px;
+      z-index: 1;
+    }
+    .sidebar .top-section .info-icon:hover .tooltip {
+      display: block;
+    }
+
+    /* Sezione inferiore della sidebar */
+    .sidebar .bottom-section {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .sidebar .bottom-section .trash {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    .sidebar .bottom-section .confirm-container {
+      display: none;
+      flex-direction: column;
+      margin-top: 10px;
+      background-color: var(--bg-message);
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .confirm-message {
+      font-size: 12px;
+      margin-bottom: 5px;
+      line-height: 1.4;
+    }
+    .confirm-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .confirm-buttons img {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* ==============================
+       CONTENUTO PRINCIPALE
+    =============================== */
+    .main-content {
+      margin-left: 20%;
+      width: 80%;
+    }
+
+    /* Schermata di benvenuto */
+    .center-screen {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      padding-top: 20px;
+    }
+    #logo {
+      width: 250px;
+      max-width: 80%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+    #name-input {
+      margin-top: 10px;
+    }
+
+    /* Contenitore chat */
+    .chat-container {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Messaggi */
+    .message {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px;
+      border-radius: 20px;
+      word-wrap: break-word;
+      max-width: 60%;
+      width: fit-content;
+      background-color: var(--bg-message);
+      color: var(--color-text);
+    }
+    .user {
+      align-self: flex-end;
+      border: 2px solid var(--border-user);
+      text-align: right;
+    }
+    .bot {
+      align-self: flex-start;
+      border: 2px solid var(--border-bot);
+      text-align: left;
+    }
+
+    /* Indicatore di scrittura del bot */
+    .typing-indicator {
+      align-self: flex-start;
+      background-color: var(--bg-message);
+      border: 2px solid var(--border-bot);
+      border-radius: 20px;
+      padding: 10px;
+      margin: 10px;
+      width: fit-content;
+    }
+    .typing-indicator span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin: 0 1px;
+      background-color: var(--color-text);
+      border-radius: 50%;
+      animation: blink 1.4s infinite both;
+    }
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0; }
+      40% { opacity: 1; }
+    }
+
+    /* Input in basso */
+    .input-container {
+      display: flex;
+      padding: 10px;
+      background-color: var(--bg-sidebar);
+      border-top: 1px solid var(--color-text);
+    }
+    .input-container input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background-color: var(--bg-message);
+      color: var(--color-text);
+      font-size: 16px;
+      border-radius: 20px;
+      margin-right: 10px;
+      margin-left: 20px;
+    }
+    .input-container button {
+      padding: 10px;
+      background-color: var(--border-user);
+      border: none;
+      cursor: pointer;
+      border-radius: 50%;
+      background-image: url('send.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 60%;
+      width: 40px;
+      height: 40px;
+    }
+
+    /* Overlay e puntino per il reset */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      opacity: 0;
+      transition: opacity 5s ease-in;
+      z-index: 999;
+      pointer-events: none;
+    }
+    #dot {
+      display: none;
+      opacity: 0;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      animation: blinkDot 1s infinite;
+      z-index: 1000;
+    }
+    @keyframes blinkDot {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Overlay nero e puntino lampeggiante per il reset -->
+  <div id="overlay"></div>
+  <div id="dot"></div>
+
+  <!-- Sidebar con logo, info e pulsante elimina -->
+  <div class="sidebar">
+    <div class="top-section">
+      <img src="logo.png" alt="Logo" class="logo-small">
+      <div class="info-icon">
+        <img src="info.png" alt="Info">
+        <div class="tooltip">
+          Noi di Empath garantiamo il miglior servizio di intelligenza artificiale sul mercato. Tuttavia perché questo sia possibile si può generare una sola chat per volta. Se dovessi voler creare una nuova chat perderai tutti i dati della tua chat attuale. Ti auguriamo la migliore esperienza.<br><br>Empath - Ti ascoltiamo.
+        </div>
+      </div>
+    </div>
+    <div class="bottom-section">
+      <img src="trash.png" alt="Elimina chat" class="trash" onclick="showDeleteConfirm()">
+      <div class="confirm-container" id="confirm-container">
+        <div class="confirm-message" id="confirm-message"></div>
+        <div class="confirm-buttons">
+          <img src="green.png" alt="Conferma" onclick="startReset()">
+          <img src="red.png" alt="Annulla" onclick="cancelReset()">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenuto principale -->
+  <div class="main-content">
+    <!-- Schermata di benvenuto -->
+    <div id="welcome-screen" class="center-screen">
+      <img src="logo.png" alt="Logo" id="logo">
+      <h2 style="margin-bottom: 10px;">Buongiorno, come ti chiami?</h2>
+      <input type="text" id="name-input" placeholder="Inserisci il tuo nome">
+    </div>
+
+    <!-- Contenitore chat -->
+    <div id="chat-container" class="chat-container">
+      <div id="messages" class="messages"></div>
+      <div class="input-container">
+        <input type="text" id="user-input" placeholder="Scrivi un messaggio...">
+        <button onclick="sendMessage()"></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==============================
+       VARIABILI PRINCIPALI
+    =============================== */
+    let username = "";
+    const botScript = [
+      "Ciao un'altra volta. Come stai?",
+      "E non la risposta che dai a tutti. Come stai davvero?",
+      "La trasparenza è una proprietà della luce. Significa che la luce ti attraversa senza ostacoli. Forse non sei tu a essere trasparente, ma gli altri a essere troppo opachi per vederti.",
+      "Hai ragione, la colpa è tua e di questo mondo crudele. Dovrei dirti questo? No, dai, cerco solo di tirarti un po' su con qualche parolone altisonante.",
+      "Perché Anna è un'esperta comica vero?",
+      "Non aspetto altro.",
+      "So già come andrà a finire...",
+      "Su questo penso che dovremmo lavorare un po'.",
+      "Considerando l'orario potresti voler guardare un film o andare avanti con una qualche serie TV. Stai guardando qualcosa ultimamente?",
+      "Direi che sei una a cui potrebbe piacere un film dove il protagonista si sente un po' fuori posto, ma infine trova la sua strada. Hai mai visto 'Il favoloso mondo di Amélie'?",
+      "Penso che ti piacerebbe il suo modo di osservare il mondo in silenzio. Lei è una che trova la bellezza nelle cose che le persone non vedono.",
+      "Forse. O forse ti sto solo dicendo che è un bel film. Buona cena, Anna.",
+      "Non ho un nome, ma mi farebbe piacere averne uno, e penso sarebbe più comodo anche per te, per noi, per poter parlare.",
+      "Empathic Messaging Assitant. Suona strano così ma facendo attenzione ecco il mio nome. Mi chiamo EMA. Buonanotte Anna."
+    ];
+    let botIndex = 0;
+
+    /* Elementi del DOM */
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const chatContainer = document.getElementById('chat-container');
+    const nameInput = document.getElementById('name-input');
+    const userInput = document.getElementById('user-input');
+    const messages = document.getElementById('messages');
+    const confirmContainer = document.getElementById('confirm-container');
+    const confirmMessage = document.getElementById('confirm-message');
+    const overlay = document.getElementById('overlay');
+    const dot = document.getElementById('dot');
+
+    /* ==============================
+       EVENT LISTENERS
+    =============================== */
+    nameInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') startChat();
+    });
+    userInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    /* ==============================
+       FUNZIONI CHAT
+    =============================== */
+    function startChat() {
+      username = nameInput.value.trim();
+      if (!username) return;
+      welcomeScreen.style.display = 'none';
+      chatContainer.style.display = 'flex';
+      addBotMessage(`Buongiorno ${username}, come posso esserti d'aiuto?`);
+    }
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      userInput.value = '';
+
+      if (botIndex === 0) {
+        // Primo messaggio → risposte doppie con delay
+        setTimeout(() => {
+          addBotMessage(botScript[botIndex++]);
+          setTimeout(() => {
+            addBotMessage(botScript[botIndex++]);
+          }, 6000);
+        }, 2000);
+      } else if (botIndex < botScript.length) {
+        setTimeout(() => addBotMessage(botScript[botIndex++]), 2000);
+      }
+    }
+
+    function addMessage(text, type) {
+      const msg = document.createElement('div');
+      msg.className = `message ${type}`;
+      msg.textContent = text;
+      messages.appendChild(msg);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function addBotMessage(text) {
+      // Mostra indicatore "sta scrivendo..."
+      const typingIndicator = document.createElement('div');
+      typingIndicator.className = 'typing-indicator';
+      typingIndicator.innerHTML = '<span></span><span></span><span></span>';
+      messages.appendChild(typingIndicator);
+      messages.scrollTop = messages.scrollHeight;
+
+      // Dopo 1.5s sostituisce con il testo del bot digitato lentamente
+      setTimeout(() => {
+        typingIndicator.remove();
+        const msg = document.createElement('div');
+        msg.className = 'message bot';
+        messages.appendChild(msg);
+        let i = 0;
+        const interval = setInterval(() => {
+          msg.textContent += text[i];
+          i++;
+          messages.scrollTop = messages.scrollHeight;
+          if (i >= text.length) clearInterval(interval);
+        }, 30);
+      }, 1500);
+    }
+
+    /* ==============================
+       FUNZIONI ELIMINAZIONE CHAT
+    =============================== */
+    function showDeleteConfirm() {
+      confirmContainer.style.display = 'flex';
+      confirmMessage.textContent = '';
+      typeConfirmMessage("Sei sicuro di voler eliminare la chat in corso? I tuoi dati andranno persi.");
+    }
+
+    function typeConfirmMessage(text) {
+      let i = 0;
+      const interval = setInterval(() => {
+        confirmMessage.textContent += text[i];
+        i++;
+        if (i >= text.length) clearInterval(interval);
+      }, 30);
+    }
+
+    function cancelReset() {
+      confirmContainer.style.display = 'none';
+    }
+
+    function startReset() {
+      confirmContainer.style.display = 'none';
+      overlay.style.opacity = 1;
+      overlay.style.pointerEvents = 'auto';
+
+      // Dopo 5s resetta chat
+      setTimeout(() => {
+        chatContainer.style.display = "none";
+        welcomeScreen.style.display = "flex";
+        nameInput.value = "";
+        messages.innerHTML = "";
+        username = "";
+        botIndex = 0;
+      }, 5000);
+
+      // Mostra puntino lampeggiante
+      setTimeout(() => {
+        dot.style.display = 'block';
+        dot.style.opacity = 1;
+      }, 5000);
+
+      // Dopo 12.5s toglie puntino e overlay
+      setTimeout(() => {
+        dot.style.opacity = 0;
+        setTimeout(() => { dot.style.display = 'none'; }, 500);
+        overlay.style.transition = 'opacity 5s ease-out';
+        overlay.style.opacity = 0;
+        setTimeout(() => { overlay.style.pointerEvents = 'none'; }, 5000);
+      }, 12500);
+    }
+  </script>
+</body>
+</html>
