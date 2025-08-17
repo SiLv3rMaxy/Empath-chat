@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +6,11 @@
     <title>Empath Chat</title>
 
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
         :root {
             --bg-main: #121212;
             --bg-sidebar: #1e1e1e;
@@ -102,6 +107,8 @@
 
                 .sidebar .bottom-section .confirm-container {
                     display: none;
+                    width: 100px;
+                    height: 60px;
                     flex-direction: column;
                     margin-top: 10px;
                     background-color: var(--bg-message);
@@ -205,18 +212,10 @@
             display: none;
             flex-direction: column;
             flex: 1;
-            min-height: 0;
-            position: relative;
-        }
-
-        .messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-            margin-bottom: 70px; /* spazio per input */
+            max-height: 80vh; /* altezza massima relativa alla finestra */
+            overflow-y: auto; /* mostra scrollbar se necessario */
+            border: 1px solid #ccc;
+            padding: 10px;
         }
 
         /* Messaggi */
@@ -243,6 +242,33 @@
             border: 2px solid var(--border-bot);
             text-align: left;
         }
+
+        .messages {
+            flex: 1;
+            min-height: 0; /* Cruciale per overflow in flexbox */
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+
+            /* Chrome, Edge, Safari */
+            .messages::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .messages::-webkit-scrollbar-thumb {
+                background-color: #570082;
+                border-radius: 4px;
+            }
+
+            .messages::-webkit-scrollbar-track {
+                background-color: #2a2a2a;
+                border-radius: 4px;
+            }
+
 
         /* Indicatore di scrittura */
         .typing-indicator {
@@ -374,7 +400,9 @@
             <div class="info-icon">
                 <img src="info.png" alt="Info">
                 <div class="tooltip">
-                    Noi di Empath garantiamo il miglior servizio...
+                    Noi di Empath garantiamo
+                    il miglior servizio di intelligenza artificiale sul mercato. Tuttavia perché questo sia possibile si può generare una sola chat per volta. Se dovessi voler creare una nuova chat perderai tutti i dati della tua chat attuale. Ti auguriamo la migliore
+                    esperienza.<br><br>Empath - Ti ascoltiamo.
                 </div>
             </div>
         </div>
@@ -414,8 +442,21 @@
     let username = "";
     const botScript = [
       "Ciao un'altra volta. Come stai?",
-      "E non la risposta che dai a tutti. Come stai davvero?"
-    ];
+            "E non la risposta che dai a tutti. Come stai davvero?",
+            "La trasparenza è una proprietà della luce. Significa che la luce ti attraversa senza ostacoli. Forse non sei tu a essere trasparente, ma gli altri a essere troppo opachi per vederti.",
+            "Hai ragione, la colpa è tua e di questo mondo crudele. Dovrei dirti questo? No, dai, cerco solo di tirarti un po' su con qualche parolone altisonante.",
+            "Perché Anna è un'esperta comica vero?",
+            "Non aspetto altro.",
+            "So già come andrà a finire...",
+            "Su questo penso che dovremmo lavorare un po'.",
+            "Considerando l'orario potresti voler guardare un film o andare avanti con una qualche serie TV. Stai guardando qualcosa ultimamente?",
+            "Direi che sei una a cui potrebbe piacere un film dove il protagonista si sente un po' fuori posto, ma infine trova la sua strada. Hai mai visto 'Il favoloso mondo di Amélie'?",
+            "Penso che ti piacerebbe il suo modo di osservare il mondo in silenzio. Lei è una che trova la bellezza nelle cose che le persone non vedono.",
+            "Forse. O forse ti sto solo dicendo che è un bel film. Buona cena, Anna.",
+            "Non ho un nome, ma mi farebbe piacere averne uno, e penso sarebbe più comodo anche per te, per noi, per poter parlare.",
+            "Empathic Messaging Assitant. Suona strano così ma facendo attenzione ecco il mio nome. Mi chiamo EMA. Buonanotte Anna."
+        ];
+
     let botIndex = 0;
 
     const welcomeScreen = document.getElementById('welcome-screen');
