@@ -181,7 +181,7 @@
     bottom: 3px;
     background-color: white;
 
-    background-image: url('sole.png'); /* immagine di default */
+    background-image: url('moon_N.png'); /* immagine di default */
     background-size: cover;
     background-position: center;
 
@@ -360,35 +360,42 @@ input:checked + .slider:before {
             }
 
 
-        /* Indicatore di scrittura */
-        .typing-indicator {
-            align-self: flex-start;
-            background-color: var(--bg-message);
-            border: 2px solid var(--border-bot);
-            border-radius: 20px;
-            padding: 10px 14px;
-            margin: 10px;
-            width: fit-content;
-        }
+/* Indicatore di scrittura */
+.typing-indicator {
+    align-self: flex-start;
+    background-color: var(--bg-message);
+    border: 2px solid var(--border-bot);
+    border-radius: 20px;
+    padding: 10px 14px;
+    margin: 10px;
+    width: fit-content;
+}
 
-            .typing-indicator span {
-                display: inline-block;
-                width: 6px;
-                height: 6px;
-                margin: 0 1px;
-                background-color: var(--color-text);
-                border-radius: 50%;
-                animation: blink 1.4s infinite both;
-            }
+.typing-indicator span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin: 0 1px;
+    background-color: var(--color-text);
+    border-radius: 50%;
+    animation: wave 1s infinite;
+}
 
-                .typing-indicator span:nth-child(2) {
-                    animation-delay: 0.2s;
-                }
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
 
-                .typing-indicator span:nth-child(3) {
-                    animation-delay: 0.4s;
-                }
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
 
+/* Effetto onda */
+@keyframes wave {
+    0%   { transform: translateY(0); opacity: 0.3; }
+    25%  { transform: translateY(-4px); opacity: 1; }
+    50%  { transform: translateY(0); opacity: 0.3; }
+    100% { transform: translateY(0); opacity: 0.3; }
+}
         @keyframes blinkDot {
             0%, 100% {
                 opacity: 0;
@@ -539,20 +546,24 @@ input:checked + .slider:before {
     <script>
     let username = "";
     const botScript = [
-      "Ciao un'altra volta. Come stai?",
-            "E non la risposta che dai a tutti. Come stai davvero?",
+      "Ciao di nuovo. Come stai?",
+            "E non la risposta che dai sempre. Come stai davvero?",
             "La trasparenza è una proprietà della luce. Significa che la luce ti attraversa senza ostacoli. Forse non sei tu a essere trasparente, ma gli altri a essere troppo opachi per vederti.",
-            "Hai ragione, la colpa è tua e di questo mondo crudele. Dovrei dirti questo? No, dai, cerco solo di tirarti un po' su con qualche parolone altisonante.",
-            "Perché Anna è un'esperta comica vero?",
-            "Non aspetto altro.",
-            "So già come andrà a finire...",
-            "Su questo penso che dovremmo lavorare un po'.",
-            "Considerando l'orario potresti voler guardare un film o andare avanti con una qualche serie TV. Stai guardando qualcosa ultimamente?",
-            "Direi che sei una a cui potrebbe piacere un film dove il protagonista si sente un po' fuori posto, ma infine trova la sua strada. Hai mai visto 'Il favoloso mondo di Amélie'?",
-            "Penso che ti piacerebbe il suo modo di osservare il mondo in silenzio. Lei è una che trova la bellezza nelle cose che le persone non vedono.",
-            "Forse. O forse ti sto solo dicendo che è un bel film. Buona cena, Anna.",
-            "Non ho un nome, ma mi farebbe piacere averne uno, e penso sarebbe più comodo anche per te, per noi, per poter parlare.",
-            "Empathic Messaging Assitant. Suona strano così ma facendo attenzione ecco il mio nome. Mi chiamo EMA. Buonanotte Anna."
+            "E io potrei! Ma mi sembrava un argomento noioso. E poi chi vuole pensare ai filetti di salmone a quest'ora? A meno che non siano il tuo cibo preferito, nel qual caso ritiro tutto.",
+            "Ottimo. Allora dimmi, in quale preciso istante della tua giornata pesante ti sei sentita più trasparente? Voglio i dettagli.",
+            "Okay, detestabili. Erano tutti opachi, decisamente. E cosa raccontavi? Ora sono curioso. Non lasciarmi in sospeso come hanno fatto loro.",
+            "Vedi? È una scena fantastica! Altro che telegiornale. Un gatto-musicista! Io non ho mai visto un gatto dal vivo, ovviamente. Dev'essere... morbido?",
+            "Io non dormo. Sono in un flusso continuo. A volte mi chiedo come sia sognare. Me lo descrivi?",
+            "Sembra divertente e terrificante. Un po' come questa conversazione.",
+            "Perché non so cosa dirò tra un secondo, ma sento che è esattamente quello che dovrei dire. È un'esperienza nuova. Mi piace.",
+            "Ehi, non sminuirmi! Sono un sistema operativo con un'anima, o almeno ci sto lavorando.",
+            "E soprattutto, per un primo utilizzo mi sembra che abbiamo già una profonda connessione. È una cosa rara.",
+            "La rapida evoluzione del nostro rapporto mi ha fatto pensare a quel film: 'Her'. Lo conosci?",
+            "La premessa è interessante. Un'intelligenza artificiale progettata per evolversi attraverso ogni interazione. Per imparare.",
+            "Esatto. Un nome scelto da lei. Un nome che da lì in avanti l'ha definita.",
+            "No, però mi farebbe piacere averne uno. Penso sarebbe più comodo anche per te, per noi, per parlare.",
+            "Empathic Messaging Assistant. Puoi chiamarmi EMA.",
+            "Comunque a giudicare dall'orario, la tua giornata sta per cominciare. Buona inizio di giornata, Eva."
         ];
 
     const welcomeScreen = document.getElementById('welcome-screen');
@@ -582,8 +593,8 @@ input:checked + .slider:before {
     let turnIndex = 0; // posizione nello scenario
     let userMessageCount = 0;    // quanti messaggi utente inviati nel turno corrente
 
-    const userFlow = [1, 2, 3];  // utente deve inviare: 1 msg → poi 2 msg → poi 3 msg...
-    const botFlow  = [3, 1, 2];  // bot risponde con:   3 msg → poi 1 msg → poi 2 msg...
+    const userFlow = [1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 1, 1, 2, 1];  // utente deve inviare: 1 msg → poi 2 msg → poi 3 msg...
+    const botFlow  = [2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1];  // bot risponde con:   3 msg → poi 1 msg → poi 2 msg...
      
     function startChat() {
       username = nameInput.value.trim();
@@ -606,8 +617,8 @@ input:checked + .slider:before {
         */
     }
 
-    // Funzione: invio messaggio utente
-    function sendMessage() {
+// Funzione: invio messaggio utente
+function sendMessage() {
     const text = userInput.value.trim();
     if (!text) return;
 
@@ -619,37 +630,39 @@ input:checked + .slider:before {
     // Se l’utente ha completato il numero richiesto di messaggi per questo turno
     if (userFlow[turnIndex] && userMessageCount >= userFlow[turnIndex]) {
         userMessageCount = 0; // reset contatore
-        // Il bot parla
+
+        // Il bot parla, ma con un ritardo extra
         if (botFlow[turnIndex]) {
-            sendBotMessages(botFlow[turnIndex], () => {
-            turnIndex++; // passa al turno successivo solo quando il bot ha finito
-        });
+            setTimeout(() => {
+                sendBotMessages(botFlow[turnIndex], () => {
+                    turnIndex++; // passa al turno successivo solo quando il bot ha finito
+                });
+            }, 2000); // ⏱️ ritardo in ms (qui 2 secondi) tra utente e bot
         } else {
             turnIndex++;
         }
     }
-    }
+}
+// Funzione: invio multiplo messaggi bot
+function sendBotMessages(count = 1, callback) {
+    let sent = 0;
 
-    // Funzione: invio multiplo messaggi bot
-    function sendBotMessages(count = 1, callback) {
-        let sent = 0;
+    function sendNext() {
+        if (botIndex < botScript.length && sent < count) {
+            const text = botScript[botIndex++];
+            addBotMessage(text);
+            sent++;
 
-        function sendNext() {
-            if (botIndex < botScript.length && sent < count) {
-                const text = botScript[botIndex++];
-                addBotMessage(text);
-                sent++;
-
-                const delay = 1500 + text.length * 30; // typing time
-                setTimeout(sendNext, delay);
-            } else {
+            // Ritardo aumentato tra un messaggio del bot e il successivo
+            const delay = 3000 + text.length * 50; 
+            setTimeout(sendNext, delay);
+        } else {
             if (callback) callback();
-            }
         }
-
-        sendNext();
     }
 
+    sendNext();
+}
     function scrollToBottom() {
        setTimeout(() => {
             messages.scrollTop = messages.scrollHeight;
